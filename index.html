@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blender Online Asset Library</title>
+  <meta name="description" content="Free and open-source Blender 3D Models, PBR Materials, Geometry Nodes, Rigs, and Shaders hosted on GitHub Pages." />
+  <style>
+    /* ==========================================================================
+       1. CSS Variables & Base Reset (Blender Dark Theme Inspired)
+       ========================================================================== */
+    :root {
+      --bg-base: #121317;
+      --bg-surface: #1b1d24;
+      --bg-elevated: #232630;
+      --bg-hover: #2b2f3c;
+      --border-subtle: #2e3240;
+      --border-strong: #3f4558;
+
+      --text-primary: #f1f3f9;
+      --text-secondary: #a3abbe;
+      --text-muted: #70788c;
+
+      --blender-orange: #ea7600;
+      --blender-orange-hover: #ff8b17;
+      --blender-orange-glow: rgba(234, 118, 0, 0.22);
+      --blender-blue: #3b82f6;
+      --blender-blue-soft: rgba(59, 130, 246, 0.16);
+      --accent-green: #10b981;
+      --accent-purple: #a855f7;
+      --accent-cyan: #06b6d4;
+
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --shadow-card: 0 10px 28px rgba(0, 0, 0, 0.35);
+      --shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.65);
+      --transition: 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+      --font-mono: "JetBrains Mono", "Fira Code", Consolas, monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image:
+        radial-gradient(circle at 15% 0%, rgba(234, 118, 0, 0.08), transparent 40%),
+        radial-gradient(circle at 85% 10%, rgba(59, 130, 246, 0.07), transparent 40%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button, input, select {
+      font-family: inherit;
+      color: inherit;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-base);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-strong);
+      border-radius: 99px;
+      border: 2px solid var(--bg-base);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+
+    /* ==========================================================================
+       2. Sticky Header / Navigation
+       ========================================================================== */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(18, 19, 23, 0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .navbar-inner {
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--blender-orange), #c85200);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 4px 14px var(--blender-orange-glow);
+      flex-shrink: 0;
+    }
+
+    .brand span.sub {
+      color: var(--text-secondary);
+      font-weight: 500;
+      font-size: 0.92rem;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-size: 0.93rem;
+      color: var(--text-secondary);
+    }
+
+    .nav-links a {
+      transition: color var(--transition);
+    }
+
+    .nav-links a:hover {
+      color: var(--text-primary);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ==========================================================================
+       3. Buttons
+       ========================================================================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 600;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--blender-orange);
+      color: #fff;
+      box-shadow: 0 4px 14px var(--blender-orange-glow);
+    }
+
+    .btn-primary:hover {
+      background: var(--blender-orange-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--bg-elevated);
+      border-color: var(--border-subtle);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-strong);
+    }
+
+    .btn-sm {
+      padding: 7px 12px;
+      font-size: 0.82rem;
+    }
+
+    /* ==========================================================================
+       4. Hero Section
+       ========================================================================== */
+    .hero {
+      padding: 64px 0 42px;
+      text-align: center;
+      position: relative;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(234, 118, 0, 0.12);
+      border: 1px solid rgba(234, 118, 0, 0.32);
+      color: #ffab52;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .hero-badge .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--blender-orange);
+      box-shadow: 0 0 8px var(--blender-orange);
+    }
+
+    .hero h1 {
+      font-size: clamp(2.1rem, 4.6vw, 3.4rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      max-width: 820px;
+      margin: 0 auto 16px;
+    }
+
+    .hero h1 .highlight {
+      background: linear-gradient(90deg, #ff9d3b, #ea7600 50%, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      color: var(--text-secondary);
+      font-size: clamp(0.98rem, 1.5vw, 1.12rem);
+      max-width: 640px;
+      margin: 0 auto 28px;
+    }
+
+    .hero-cta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 40px;
+    }
+
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 14px;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 18px 20px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+    }
+
+    .stat-item strong {
+      display: block;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .stat-item span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ==========================================================================
+       5. Library Controls (Search, Filters, Sort)
+       ========================================================================== */
+    .library-section {
+      padding: 20px 0 72px;
+    }
+
+    .controls-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      margin-bottom: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .controls-top {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1 1 320px;
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 11px 14px 11px 42px;
+      background: var(--bg-base);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      font-size: 0.94rem;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--blender-orange);
+      box-shadow: 0 0 0 3px var(--blender-orange-glow);
+    }
+
+    .sort-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sort-group label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .sort-select {
+      padding: 10px 14px;
+      background: var(--bg-base);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+
+    .sort-select:focus {
+      outline: none;
+      border-color: var(--blender-orange);
+    }
+
+    .filter-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .pill {
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      font-size: 0.84rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .pill:hover {
+      border-color: var(--border-strong);
+      color: var(--text-primary);
+    }
+
+    .pill.active {
+      background: var(--blender-orange);
+      border-color: var(--blender-orange);
+      color: #fff;
+      box-shadow: 0 4px 12px var(--blender-orange-glow);
+    }
+
+    .results-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+
+    /* ==========================================================================
+       6. Asset Cards Grid
+       ========================================================================== */
+    .asset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 22px;
+    }
+
+    .asset-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .asset-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-card);
+    }
+
+    .card-thumb {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      background: #14161c;
+      overflow: hidden;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .card-thumb img,
+    .card-thumb svg.preview-art {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.35s ease;
+    }
+
+    .asset-card:hover .card-thumb img,
+    .asset-card:hover .card-thumb svg.preview-art {
+      transform: scale(1.04);
+    }
+
+    .badge-row {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+
+    .badge {
+      padding: 4px 9px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .badge-cat {
+      background: rgba(18, 19, 23, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: var(--text-primary);
+    }
+
+    .badge-ver {
+      background: rgba(59, 130, 246, 0.24);
+      border: 1px solid rgba(59, 130, 246, 0.45);
+      color: #93c5fd;
+    }
+
+    .card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 10px;
+    }
+
+    .card-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .card-title {
+      font-size: 1.04rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+
+    .card-title:hover {
+      color: var(--blender-orange-hover);
+    }
+
+    .license-pill {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(16, 185, 129, 0.14);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      flex-shrink: 0;
+    }
+
+    .card-desc {
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-specs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-top: auto;
+      padding-top: 6px;
+    }
+
+    .spec-chip {
+      background: var(--bg-base);
+      border: 1px solid var(--border-subtle);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .card-footer {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      gap: 8px;
+      background: rgba(18, 19, 23, 0.35);
+    }
+
+    .card-footer .btn {
+      flex: 1;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 64px 20px;
+      background: var(--bg-surface);
+      border: 1px dashed var(--border-strong);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+    }
+
+    /* ==========================================================================
+       7. Setup / Blender Asset Browser Guide Section
+       ========================================================================== */
+    .guide-section {
+      padding: 64px 0;
+      border-top: 1px solid var(--border-subtle);
+      background: rgba(27, 29, 36, 0.45);
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto 38px;
+    }
+
+    .section-header h2 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+    }
+
+    .section-header p {
+      color: var(--text-secondary);
+      font-size: 0.96rem;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .step-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 24px;
+    }
+
+    .step-num {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: var(--blender-orange-glow);
+      border: 1px solid rgba(234, 118, 0, 0.4);
+      color: #ffab52;
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+      margin-bottom: 14px;
+    }
+
+    .step-card h3 {
+      font-size: 1.05rem;
+      margin-bottom: 8px;
+    }
+
+    .step-card p {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+
+    .code-inline {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      background: var(--bg-base);
+      border: 1px solid var(--border-subtle);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #93c5fd;
+    }
+
+    .remote-box {
+      margin-top: 28px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .remote-url-code {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: #ffab52;
+      background: var(--bg-base);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      word-break: break-all;
+      flex: 1 1 300px;
+    }
+
+    /* ==========================================================================
+       8. Asset Preview Modal
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(8, 9, 12, 0.78);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 780px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-modal);
+      animation: modalIn 0.2s ease-out;
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.96) translateY(8px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .modal-close {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      transition: all var(--transition);
+    }
+
+    .modal-close:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .modal-preview {
+      aspect-ratio: 16 / 8.5;
+      background: #101218;
+      border-bottom: 1px solid var(--border-subtle);
+      overflow: hidden;
+    }
+
+    .modal-preview svg,
+    .modal-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .modal-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+    }
+
+    .spec-box {
+      background: var(--bg-base);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+
+    .spec-box label {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .spec-box strong {
+      font-size: 0.92rem;
+      color: var(--text-primary);
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      font-size: 0.78rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding-top: 8px;
+    }
+
+    /* ==========================================================================
+       9. Footer & Toast Notification
+       ========================================================================== */
+    footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 36px 0;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+
+    .footer-inner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-links a:hover {
+      color: var(--text-primary);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 300;
+      background: var(--bg-elevated);
+      border: 1px solid var(--blender-orange);
+      color: var(--text-primary);
+      padding: 12px 18px;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-card);
+      font-size: 0.88rem;
+      font-weight: 500;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: all 0.25s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ==========================================================================
+       10. Responsive Adjustments
+       ========================================================================== */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+      .stats-bar {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .hero {
+        padding: 42px 0 28px;
+      }
+      .navbar-inner {
+        height: 60px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================ NAVBAR ============================ -->
+  <header class="navbar">
+    <div class="container navbar-inner">
+      <a href="#" class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div>
+          Blender Assets <span class="sub">/ Online Library</span>
+        </div>
+      </a>
+
+      <nav class="nav-links" aria-label="Primary Navigation">
+        <a href="#library">Browse Library</a>
+        <a href="#setup">Asset Browser Setup</a>
+        <a href="#contribute">GitHub Hosting</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="https://github.com/Dinesh0N" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55 0-.27-.01-1.17-.02-2.12-3.2.69-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 5.78 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.58.23 2.75.11 3.04.74.81 1.19 1.83 1.19 3.09 0 4.42-2.69 5.39-5.26 5.68.41.36.78 1.06.78 2.14 0 1.55-.01 2.79-.01 3.17 0 .31.21.66.79.55A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/>
+          </svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================ HERO ============================ -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        GitHub Pages Static Repository • Blender 4.2 – 5.2 Ready
+      </div>
+      <h1>
+        Open-Source <span class="highlight">Blender Online</span> Asset Library
+      </h1>
+      <p>
+        Production-ready 3D models, procedural PBR materials, Geometry Nodes setups, character rigs, and EEVEE/Cycles shaders. Download directly or sync with Blender's Asset Browser.
+      </p>
+
+      <div class="hero-cta">
+        <a href="#library" class="btn btn-primary">
+          Explore Assets
+        </a>
+        <a href="#setup" class="btn btn-secondary">
+          Connect to Blender
+        </a>
+      </div>
+
+      <div class="stats-bar" aria-label="Library Statistics">
+        <div class="stat-item">
+          <strong id="statTotal">0</strong>
+          <span>Total Assets</span>
+        </div>
+        <div class="stat-item">
+          <strong>CC0 / MIT</strong>
+          <span>Open License</span>
+        </div>
+        <div class="stat-item">
+          <strong>4.2 – 5.2+</strong>
+          <span>Blender Support</span>
+        </div>
+        <div class="stat-item">
+          <strong>100% Free</strong>
+          <span>Direct .blend</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ LIBRARY BROWSER ============================ -->
+  <main id="library" class="library-section">
+    <div class="container">
+      <div class="controls-panel">
+        <div class="controls-top">
+          <div class="search-box">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input
+              type="search"
+              id="searchInput"
+              placeholder="Search models, shaders, geometry nodes, tags (e.g., stylized, PBR, rig)..."
+              aria-label="Search assets"
+            />
+          </div>
+
+          <div class="sort-group">
+            <label for="sortSelect">Sort by:</label>
+            <select id="sortSelect" class="sort-select">
+              <option value="featured">Featured</option>
+              <option value="newest">Newest</option>
+              <option value="name">Name (A–Z)</option>
+              <option value="size">File Size (Smallest)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-pills" id="categoryFilters" role="tablist" aria-label="Asset Categories">
+          <!-- Populated dynamically by JS -->
+        </div>
+      </div>
+
+      <div class="results-meta">
+        <span id="resultsCount">Showing 0 assets</span>
+        <span id="activeFilterLabel">Category: All</span>
+      </div>
+
+      <div class="asset-grid" id="assetGrid">
+        <!-- Asset cards rendered dynamically -->
+      </div>
+    </div>
+  </main>
+
+  <!-- ============================ BLENDER ASSET BROWSER SETUP ============================ -->
+  <section id="setup" class="guide-section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Use Inside Blender Asset Browser</h2>
+        <p>Drop downloaded <span class="code-inline">.blend</span> files straight into your library or point Blender's remote/online asset catalog to your GitHub Pages index.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h3>Download or Clone Repo</h3>
+          <p>Download any individual <span class="code-inline">.blend</span> pack above, or clone the full GitHub repository containing the <span class="code-inline">blender_assets.cats.txt</span> catalog file.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <h3>Register Asset Library</h3>
+          <p>Open Blender → <span class="code-inline">Edit &gt; Preferences &gt; File Paths &gt; Asset Libraries</span>, click <strong>+</strong>, and select your downloaded folder (or paste the remote JSON URL in Blender 5.x).</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <h3>Drag &amp; Drop into Scene</h3>
+          <p>Open the <strong>Asset Browser</strong> editor, choose your library from the dropdown, and drag models, node groups, or PBR materials straight into the 3D Viewport.</p>
+        </div>
+      </div>
+
+      <div id="contribute" class="remote-box">
+        <div>
+          <strong>Remote Catalog / GitHub Pages Endpoint</strong>
+          <div style="font-size:0.84rem;color:var(--text-secondary);">Replace with your GitHub username &amp; repo name once published on GitHub Pages.</div>
+        </div>
+        <div class="remote-url-code" id="repoUrlText">https://dinesh0n.github.io/blender-asset-library/index.json</div>
+        <button class="btn btn-secondary btn-sm" id="copyRepoBtn" type="button">Copy URL</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ FOOTER ============================ -->
+  <footer>
+    <div class="container footer-inner">
+      <div>
+        <strong>Blender Online Asset Library</strong> — Hosted statically on GitHub Pages.
+      </div>
+      <div class="footer-links">
+        <a href="#library">Assets</a>
+        <a href="#setup">Setup Guide</a>
+        <a href="https://github.com/Dinesh0N" target="_blank" rel="noopener noreferrer">GitHub Profile</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================ PREVIEW MODAL ============================ -->
+  <div class="modal-backdrop" id="assetModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <h3 id="modalTitle" style="font-size:1.2rem;">Asset Title</h3>
+          <span id="modalSubtitle" style="font-size:0.82rem;color:var(--text-secondary);">Category • Blender 5.2</span>
+        </div>
+        <button class="modal-close" id="closeModalBtn" aria-label="Close preview">&times;</button>
+      </div>
+      <div class="modal-preview" id="modalPreview"></div>
+      <div class="modal-body">
+        <p id="modalDesc" style="color:var(--text-secondary);font-size:0.94rem;"></p>
+
+        <div class="specs-grid" id="modalSpecs"></div>
+
+        <div class="tag-list" id="modalTags"></div>
+
+        <div class="modal-actions">
+          <a href="#" id="modalDownloadBtn" class="btn btn-primary" download>
+            Download .blend Asset
+          </a>
+          <button type="button" id="modalCopyLinkBtn" class="btn btn-secondary">
+            Copy Direct Link
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- ============================ VANILLA JS DATA & LOGIC ============================ -->
+  <script>
+    /* ========================================================================
+       ASSET CATALOG DATA
+       To add new assets for your GitHub Pages site:
+       1. Place your .blend / .zip files inside an `assets/` folder in your repo.
+       2. (Optional) Place render previews inside `previews/` and set `previewImg: "previews/my_asset.webp"`.
+       3. Add a new object to the ASSETS array below and git push!
+       ======================================================================== */
+    const ASSETS = [
+      {
+        id: "scifi-corridor-kit",
+        title: "Sci-Fi Modular Corridor Kit",
+        category: "3D Models",
+        blenderVersion: "Blender 4.2+",
+        engine: "Cycles / EEVEE",
+        license: "CC0",
+        sizeMB: 18.4,
+        polyCount: "42K Tris",
+        format: ".blend",
+        date: "2026-11-18",
+        featured: true,
+        previewImg: "", // Optional: "previews/scifi-corridor.webp"
+        accent: "#3b82f6",
+        shape: "grid",
+        downloadUrl: "./assets/scifi_modular_corridor.blend",
+        description: "14 snap-ready hard-surface sci-fi wall panels, floor grates, bulkheads, and ceiling trims with clean quad topology and packed UVs.",
+        tags: ["hard-surface", "modular", "sci-fi", "kitbash", "uv-unwrapped"]
+      },
+      {
+        id: "procedural-brushed-metal",
+        title: "Procedural Anisotropic Brushed Metal",
+        category: "Materials",
+        blenderVersion: "Blender 4.2+",
+        engine: "Cycles / EEVEE Next",
+        license: "CC0",
+        sizeMB: 2.1,
+        polyCount: "Shader Node",
+        format: ".blend",
+        date: "2026-11-15",
+        featured: true,
+        previewImg: "",
+        accent: "#ea7600",
+        shape: "sphere",
+        downloadUrl: "./assets/procedural_brushed_metal.blend",
+        description: "100% procedural metallic shader with adjustable edge wear, micro-scratches, fingerprint roughness, and anisotropic grain direction.",
+        tags: ["procedural", "pbr", "metal", "shader", "cycles"]
+      },
+      {
+        id: "geonodes-cable-generator",
+        title: "Hanging Cable & Wire Generator",
+        category: "Geometry Nodes",
+        blenderVersion: "Blender 5.0+",
+        engine: "Universal",
+        license: "MIT",
+        sizeMB: 1.4,
+        polyCount: "Procedural",
+        format: ".blend",
+        date: "2026-11-20",
+        featured: true,
+        previewImg: "",
+        accent: "#06b6d4",
+        shape: "nodes",
+        downloadUrl: "./assets/geonodes_cable_generator.blend",
+        description: "Draw curves or pick two surfaces to auto-generate catenary cables with sag physics, zip-ties, and UV-mapped braided sheaths.",
+        tags: ["geometry-nodes", "cables", "procedural", "environment"]
+      },
+      {
+        id: "stylized-character-base-rig",
+        title: "Stylized Character Base + Rigify",
+        category: "Rigs",
+        blenderVersion: "Blender 5.2+",
+        engine: "Cycles / EEVEE",
+        license: "CC-BY",
+        sizeMB: 12.8,
+        polyCount: "18.5K Quads",
+        format: ".blend",
+        date: "2026-11-10",
+        featured: true,
+        previewImg: "",
+        accent: "#a855f7",
+        shape: "rig",
+        downloadUrl: "./assets/stylized_base_rigify.blend",
+        description: "Animation-ready stylized human base mesh with clean facial edge loops, IK/FK limb switches, and Mixamo-compatible bone naming.",
+        tags: ["character", "rigify", "animation", "topology", "ik-fk"]
+      },
+      {
+        id: "eevee-real-time-caustics",
+        title: "Water & Glass Dispersion Shader",
+        category: "Shaders",
+        blenderVersion: "Blender 5.2+",
+        engine: "EEVEE / Cycles",
+        license: "MIT",
+        sizeMB: 3.6,
+        polyCount: "Shader Node",
+        format: ".blend",
+        date: "2026-11-12",
+        featured: false,
+        previewImg: "",
+        accent: "#10b981",
+        shape: "prism",
+        downloadUrl: "./assets/glass_dispersion_caustics.blend",
+        description: "Lightweight glass and shallow water shader featuring chromatic dispersion controls, fake shadow caustics, and depth absorption.",
+        tags: ["caustics", "glass", "water", "eevee", "dispersion"]
+      },
+      {
+        id: "studio-three-point-lights",
+        title: "Studio Product Lighting Rig Pack",
+        category: "Lighting",
+        blenderVersion: "Blender 4.2+",
+        engine: "Cycles / EEVEE",
+        license: "CC0",
+        sizeMB: 6.2,
+        polyCount: "5 Light Rigs",
+        format: ".blend",
+        date: "2026-10-29",
+        featured: false,
+        previewImg: "",
+        accent: "#f59e0b",
+        shape: "light",
+        downloadUrl: "./assets/studio_lighting_rigs.blend",
+        description: "Five drag-and-drop studio lighting setups (Softbox, Rim Dramatic, Automotive Sweep, Warm Key, Clay Turntable) with cyclorama backdrop.",
+        tags: ["lighting", "studio", "turntable", "product-render", "softbox"]
+      },
+      {
+        id: "stylized-foliage-scatter",
+        title: "Stylized Grass & Foliage Scatter",
+        category: "Geometry Nodes",
+        blenderVersion: "Blender 4.2+",
+        engine: "EEVEE / Cycles",
+        license: "CC0",
+        sizeMB: 9.5,
+        polyCount: "12 Variants",
+        format: ".blend",
+        date: "2026-11-04",
+        featured: false,
+        previewImg: "",
+        accent: "#22c55e",
+        shape: "nodes",
+        downloadUrl: "./assets/stylized_foliage_scatter.blend",
+        description: "Camera-frustum culled Geometry Nodes grass scatter system with wind animation controls and Ghibli-inspired normal-blended foliage.",
+        tags: ["foliage", "grass", "stylized", "wind", "geometry-nodes"]
+      },
+      {
+        id: "handpainted-stone-wall",
+        title: "Stylized Mossy Stone Wall PBR",
+        category: "Materials",
+        blenderVersion: "Blender 4.2+",
+        engine: "Cycles / EEVEE",
+        license: "CC0",
+        sizeMB: 14.2,
+        polyCount: "4K Packed",
+        format: ".blend",
+        date: "2026-10-22",
+        featured: false,
+        previewImg: "",
+        accent: "#eab308",
+        shape: "sphere",
+        downloadUrl: "./assets/mossy_stone_wall_pbr.blend",
+        description: "Seamless tileable stone material with height-blended moss mask, ambient occlusion cavity dirt, and optional micro-displacement.",
+        tags: ["stone", "moss", "pbr", "tileable", "environment"]
+      }
+    ];
+
+    /* ========================================================================
+       PROCEDURAL SVG PREVIEW GENERATOR (Fallback when previewImg is empty)
+       ======================================================================== */
+    function generatePreviewSVG(asset) {
+      const c = asset.accent || "#ea7600";
+      const patterns = {
+        sphere: `
+          <defs>
+            <radialGradient id="g-${asset.id}" cx="36%" cy="32%" r="60%">
+              <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85"/>
+              <stop offset="28%" stop-color="${c}" stop-opacity="0.95"/>
+              <stop offset="85%" stop-color="#14161e" stop-opacity="1"/>
+            </radialGradient>
+          </defs>
+          <rect width="480" height="300" fill="#12141b"/>
+          <g stroke="#ffffff" stroke-opacity="0.06" stroke-width="1">
+            <path d="M0 220 L480 220 M0 250 L480 250 M120 220 L40 300 M240 220 L240 300 M360 220 L440 300"/>
+          </g>
+          <ellipse cx="240" cy="236" rx="74" ry="16" fill="#000" fill-opacity="0.5"/>
+          <circle cx="240" cy="144" r="82" fill="url(#g-${asset.id})"/>
+          <circle cx="240" cy="144" r="82" fill="none" stroke="${c}" stroke-opacity="0.45" stroke-width="1.5"/>
+        `,
+        nodes: `
+          <rect width="480" height="300" fill="#12141b"/>
+          <g stroke="#ffffff" stroke-opacity="0.05" stroke-width="1">
+            <path d="M40 0 V300 M120 0 V300 M200 0 V300 M280 0 V300 M360 0 V300 M440 0 V300 M0 60 H480 M0 140 H480 M0 220 H480"/>
+          </g>
+          <path d="M150 118 C210 118, 210 170, 270 170" fill="none" stroke="${c}" stroke-width="3"/>
+          <path d="M150 190 C210 190, 220 170, 270 170" fill="none" stroke="#ea7600" stroke-width="2.5" stroke-dasharray="5 4"/>
+          <rect x="64" y="88" width="90" height="58" rx="8" fill="#1e222d" stroke="${c}" stroke-width="1.5"/>
+          <rect x="64" y="88" width="90" height="18" rx="6" fill="${c}" fill-opacity="0.35"/>
+          <rect x="64" y="162" width="90" height="52" rx="8" fill="#1e222d" stroke="#3f4558" stroke-width="1.5"/>
+          <rect x="270" y="128" width="136" height="82" rx="8" fill="#1e222d" stroke="${c}" stroke-width="2"/>
+          <rect x="270" y="128" width="136" height="20" rx="6" fill="${c}" fill-opacity="0.5"/>
+          <circle cx="154" cy="118" r="5" fill="${c}"/>
+          <circle cx="270" cy="170" r="5" fill="${c}"/>
+        `,
+        grid: `
+          <rect width="480" height="300" fill="#12141b"/>
+          <g stroke="${c}" stroke-opacity="0.22" stroke-width="1.2" fill="none">
+            <polygon points="240,48 360,108 240,168 120,108"/>
+            <polygon points="120,108 240,168 240,256 120,196" fill="${c}" fill-opacity="0.1"/>
+            <polygon points="360,108 240,168 240,256 360,196" fill="${c}" fill-opacity="0.18"/>
+            <line x1="240" y1="48" x2="240" y2="256"/>
+            <line x1="180" y1="78" x2="300" y2="138"/>
+            <line x1="300" y1="78" x2="180" y2="138"/>
+          </g>
+          <circle cx="240" cy="168" r="5" fill="#ea7600"/>
+        `,
+        rig: `
+          <rect width="480" height="300" fill="#12141b"/>
+          <g stroke="${c}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <circle cx="240" cy="74" r="20" fill="${c}" fill-opacity="0.16"/>
+            <path d="M240 94 L240 166 M178 122 L240 112 L302 122 M240 166 L208 238 M240 166 L272 238"/>
+            <circle cx="240" cy="112" r="5" fill="#ea7600"/>
+            <circle cx="178" cy="122" r="5" fill="#ea7600"/>
+            <circle cx="302" cy="122" r="5" fill="#ea7600"/>
+            <circle cx="240" cy="166" r="5" fill="#ea7600"/>
+            <circle cx="208" cy="238" r="5" fill="${c}"/>
+            <circle cx="272" cy="238" r="5" fill="${c}"/>
+          </g>
+          <ellipse cx="240" cy="244" rx="70" ry="12" fill="none" stroke="#ffffff" stroke-opacity="0.16" stroke-dasharray="6 4"/>
+        `,
+        prism: `
+          <rect width="480" height="300" fill="#12141b"/>
+          <line x1="50" y1="168" x2="210" y2="146" stroke="#ffffff" stroke-width="3" stroke-opacity="0.85"/>
+          <line x1="274" y1="146" x2="430" y2="112" stroke="#ff5e5e" stroke-width="3" stroke-opacity="0.8"/>
+          <line x1="274" y1="152" x2="430" y2="148" stroke="#10b981" stroke-width="3" stroke-opacity="0.85"/>
+          <line x1="274" y1="158" x2="430" y2="188" stroke="#3b82f6" stroke-width="3" stroke-opacity="0.85"/>
+          <polygon points="240,62 324,224 156,224" fill="${c}" fill-opacity="0.15" stroke="${c}" stroke-width="2"/>
+        `,
+        light: `
+          <defs>
+            <radialGradient id="l-${asset.id}" cx="50%" cy="32%" r="55%">
+              <stop offset="0%" stop-color="${c}" stop-opacity="0.55"/>
+              <stop offset="100%" stop-color="#12141b" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <rect width="480" height="300" fill="#12141b"/>
+          <rect width="480" height="300" fill="url(#l-${asset.id})"/>
+          <polygon points="240,66 368,244 112,244" fill="${c}" fill-opacity="0.08"/>
+          <circle cx="240" cy="66" r="16" fill="${c}"/>
+          <circle cx="240" cy="186" r="36" fill="#232630" stroke="${c}" stroke-width="2"/>
+        `
+      };
+
+      const body = patterns[asset.shape] || patterns.grid;
+      return `<svg class="preview-art" viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${asset.title} preview">${body}</svg>`;
+    }
+
+    function renderThumbMarkup(asset) {
+      if (asset.previewImg && asset.previewImg.trim() !== "") {
+        return `<img src="${asset.previewImg}" alt="${asset.title}" loading="lazy" />`;
+      }
+      return generatePreviewSVG(asset);
+    }
+
+    /* ========================================================================
+       STATE & DOM REFERENCES
+       ======================================================================== */
+    let activeCategory = "All";
+    let searchQuery = "";
+    let sortBy = "featured";
+
+    const assetGrid = document.getElementById("assetGrid");
+    const categoryFilters = document.getElementById("categoryFilters");
+    const searchInput = document.getElementById("searchInput");
+    const sortSelect = document.getElementById("sortSelect");
+    const resultsCount = document.getElementById("resultsCount");
+    const activeFilterLabel = document.getElementById("activeFilterLabel");
+    const statTotal = document.getElementById("statTotal");
+
+    const modalBackdrop = document.getElementById("assetModal");
+    const closeModalBtn = document.getElementById("closeModalBtn");
+    const toastEl = document.getElementById("toast");
+
+    let toastTimer = null;
+    function showToast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2600);
+    }
+
+    /* ========================================================================
+       RENDER CATEGORIES
+       ======================================================================== */
+    function renderCategories() {
+      const categories = ["All", ...new Set(ASSETS.map(a => a.category))];
+      categoryFilters.innerHTML = categories.map(cat => {
+        const count = cat === "All" ? ASSETS.length : ASSETS.filter(a => a.category === cat).length;
+        return `
+          <button
+            type="button"
+            class="pill ${cat === activeCategory ? "active" : ""}"
+            data-category="${cat}"
+            role="tab"
+            aria-selected="${cat === activeCategory}"
+          >
+            ${cat} <span style="opacity:0.7;font-size:0.78em;">(${count})</span>
+          </button>
+        `;
+      }).join("");
+
+      categoryFilters.querySelectorAll(".pill").forEach(btn => {
+        btn.addEventListener("click", () => {
+          activeCategory = btn.dataset.category;
+          renderCategories();
+          renderAssets();
+        });
+      });
+    }
+
+    /* ========================================================================
+       FILTER, SORT & RENDER ASSET CARDS
+       ======================================================================== */
+    function getFilteredAssets() {
+      const q = searchQuery.trim().toLowerCase();
+      let list = ASSETS.filter(asset => {
+        const matchCat = activeCategory === "All" || asset.category === activeCategory;
+        const matchQuery = !q ||
+          asset.title.toLowerCase().includes(q) ||
+          asset.description.toLowerCase().includes(q) ||
+          asset.category.toLowerCase().includes(q) ||
+          asset.tags.some(t => t.toLowerCase().includes(q));
+        return matchCat && matchQuery;
+      });
+
+      if (sortBy === "featured") {
+        list.sort((a, b) => Number(b.featured) - Number(a.featured) || b.date.localeCompare(a.date));
+      } else if (sortBy === "newest") {
+        list.sort((a, b) => b.date.localeCompare(a.date));
+      } else if (sortBy === "name") {
+        list.sort((a, b) => a.title.localeCompare(b.title));
+      } else if (sortBy === "size") {
+        list.sort((a, b) => a.sizeMB - b.sizeMB);
+      }
+      return list;
+    }
+
+    function renderAssets() {
+      const filtered = getFilteredAssets();
+      statTotal.textContent = ASSETS.length;
+      resultsCount.textContent = `Showing ${filtered.length} of ${ASSETS.length} assets`;
+      activeFilterLabel.textContent = `Category: ${activeCategory}`;
+
+      if (filtered.length === 0) {
+        assetGrid.innerHTML = `
+          <div class="empty-state">
+            <h3 style="margin-bottom:8px;color:var(--text-primary);">No matching assets found</h3>
+            <p style="margin-bottom:16px;">Try clearing your search filter or switching categories.</p>
+            <button type="button" class="btn btn-secondary btn-sm" id="resetFiltersBtn">Reset Filters</button>
+          </div>
+        `;
+        document.getElementById("resetFiltersBtn").addEventListener("click", () => {
+          activeCategory = "All";
+          searchQuery = "";
+          searchInput.value = "";
+          renderCategories();
+          renderAssets();
+        });
+        return;
+      }
+
+      assetGrid.innerHTML = filtered.map(asset => `
+        <article class="asset-card" data-id="${asset.id}">
+          <div class="card-thumb" data-open="${asset.id}">
+            ${renderThumbMarkup(asset)}
+            <div class="badge-row">
+              <span class="badge badge-cat">${asset.category}</span>
+              <span class="badge badge-ver">${asset.blenderVersion}</span>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="card-title-row">
+              <h3 class="card-title" data-open="${asset.id}">${asset.title}</h3>
+              <span class="license-pill">${asset.license}</span>
+            </div>
+            <p class="card-desc">${asset.description}</p>
+            <div class="card-specs">
+              <span class="spec-chip">${asset.format}</span>
+              <span class="spec-chip">${asset.sizeMB} MB</span>
+              <span class="spec-chip">${asset.polyCount}</span>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <button type="button" class="btn btn-secondary btn-sm" data-open="${asset.id}">
+              Details
+            </button>
+            <a href="${asset.downloadUrl}" class="btn btn-primary btn-sm" download data-download="${asset.title}">
+              Download
+            </a>
+          </div>
+        </article>
+      `).join("");
+
+      assetGrid.querySelectorAll("[data-open]").forEach(el => {
+        el.addEventListener("click", () => openModal(el.dataset.open));
+      });
+
+      assetGrid.querySelectorAll("[data-download]").forEach(el => {
+        el.addEventListener("click", () => {
+          showToast(`Downloading "${el.dataset.download}"...`);
+        });
+      });
+    }
+
+    /* ========================================================================
+       MODAL LOGIC
+       ======================================================================== */
+    function openModal(assetId) {
+      const asset = ASSETS.find(a => a.id === assetId);
+      if (!asset) return;
+
+      document.getElementById("modalTitle").textContent = asset.title;
+      document.getElementById("modalSubtitle").textContent = `${asset.category} • ${asset.blenderVersion} • Updated ${asset.date}`;
+      document.getElementById("modalPreview").innerHTML = renderThumbMarkup(asset);
+      document.getElementById("modalDesc").textContent = asset.description;
+
+      document.getElementById("modalSpecs").innerHTML = `
+        <div class="spec-box"><label>Blender Version</label><strong>${asset.blenderVersion}</strong></div>
+        <div class="spec-box"><label>Render Engine</label><strong>${asset.engine}</strong></div>
+        <div class="spec-box"><label>Complexity</label><strong>${asset.polyCount}</strong></div>
+        <div class="spec-box"><label>File Size</label><strong>${asset.sizeMB} MB (${asset.format})</strong></div>
+        <div class="spec-box"><label>License</label><strong>${asset.license}</strong></div>
+      `;
+
+      document.getElementById("modalTags").innerHTML = asset.tags
+        .map(tag => `<span class="tag">#${tag}</span>`)
+        .join("");
+
+      const dlBtn = document.getElementById("modalDownloadBtn");
+      dlBtn.href = asset.downloadUrl;
+
+      const copyBtn = document.getElementById("modalCopyLinkBtn");
+      copyBtn.onclick = () => {
+        const fullUrl = new URL(asset.downloadUrl, window.location.href).href;
+        navigator.clipboard.writeText(fullUrl)
+          .then(() => showToast("Direct asset link copied!"))
+          .catch(() => showToast("Link: " + fullUrl));
+      };
+
+      modalBackdrop.classList.add("open");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeModal() {
+      modalBackdrop.classList.remove("open");
+      document.body.style.overflow = "";
+    }
+
+    closeModalBtn.addEventListener("click", closeModal);
+    modalBackdrop.addEventListener("click", e => {
+      if (e.target === modalBackdrop) closeModal();
+    });
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && modalBackdrop.classList.contains("open")) closeModal();
+    });
+
+    /* ========================================================================
+       EVENTS & INITIALIZATION
+       ======================================================================== */
+    searchInput.addEventListener("input", e => {
+      searchQuery = e.target.value;
+      renderAssets();
+    });
+
+    sortSelect.addEventListener("change", e => {
+      sortBy = e.target.value;
+      renderAssets();
+    });
+
+    document.getElementById("copyRepoBtn").addEventListener("click", () => {
+      const url = document.getElementById("repoUrlText").textContent.trim();
+      navigator.clipboard.writeText(url)
+        .then(() => showToast("Remote catalog URL copied to clipboard!"))
+        .catch(() => showToast("Copy failed — select URL manually."));
+    });
+
+    renderCategories();
+    renderAssets();
+  </script>
+</body>
+</html>
